@@ -5,9 +5,12 @@ pragma solidity ^0.8.10;
 contract Lottery {
     address public owner;
     address payable[] public players;
+    uint256 public lotteryId;
+    mapping(uint256 => address payable) public history;
 
     constructor() {
         owner = msg.sender;
+        lotteryId = 1;
     }
 
     function entry() public payable {
@@ -22,6 +25,10 @@ contract Lottery {
     function getWinner() public onlyOwner {
         uint256 index = getRandomNumber() % players.length;
         players[index].transfer(address(this).balance);
+
+        //to avoid rentrancy issue, any state to be updated should be updated after transfer function
+        lotteryId++;
+        history[lotteryId] = players[index];
 
         //reset contract after winner is picked
         players = new address payable[](0);
