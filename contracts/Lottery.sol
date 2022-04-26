@@ -13,6 +13,14 @@ contract Lottery {
         lotteryId = 1;
     }
 
+    function getWinnerByLottery(uint256 id)
+        public
+        view
+        returns (address payable)
+    {
+        return history[id];
+    }
+
     function entry() public payable {
         require(msg.value > 0.01 ether, "entry fee cannot be 0");
         players.push(payable(msg.sender));
